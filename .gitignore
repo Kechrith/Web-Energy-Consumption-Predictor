@@ -34,7 +34,6 @@ profile/
 # ==============================
 # Machine Learning Artifacts
 # ==============================
-artifacts/*.joblib
 artifacts/*.pkl
 models/*.joblib
 models/*.pkl
