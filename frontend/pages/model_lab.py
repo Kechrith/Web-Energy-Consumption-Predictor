@@ -176,13 +176,9 @@ with tab_res:
         eid = select_id("Experiment", {e["id"]: f"{e['id']} · {e['dataset_name']} · {fmt_date(e['created'], True)}"
                                        for e in experiments[::-1]})
         exp = next(e for e in experiments if e["id"] == eid)
-        tag = (badge("Computed locally · synthetic demo data", "demo") if exp["dataset_source"] == "demo"
-               else badge("Computed locally · uploaded data", "real"))
+        tag = badge("Computed locally · uploaded data", "real")
         st.markdown(f"Target `{exp['target']}` · {exp['freq']} · split {exp['split_pct'][0]}/{exp['split_pct'][1]}/"
                     f"{exp['split_pct'][2]} (train/val/test) &nbsp; {tag}", unsafe_allow_html=True)
-        if exp["dataset_source"] == "demo":
-            banner("These metrics were genuinely computed, but on synthetic data. They show how the workflow behaves, "
-                   "not how accurate any model would be for a real site.", kind="demo", title="Demo evaluation.")
 
         rank = _ranking(exp)
         if rank.empty:

@@ -20,7 +20,6 @@ NAVY = colors.HexColor("#10243A")
 BLUE = colors.HexColor("#2563EB")
 MUTED = colors.HexColor("#64748B")
 BORDER = colors.HexColor("#E2E8F0")
-AMBER_BG = colors.HexColor("#FFFBEB")
 
 
 def report_rows(report: dict) -> pd.DataFrame:
@@ -58,13 +57,6 @@ def build_pdf(report: dict) -> bytes:
         Spacer(1, 6),
         HRFlowable(width="100%", color=BORDER, thickness=1),
     ]
-    if report.get("demo_notice"):
-        t = Table([[Paragraph(f"<b>Demonstration data.</b> {report['demo_notice']}", note)]], colWidths=[doc.width])
-        t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), AMBER_BG), ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#FDE68A")),
-                               ("LEFTPADDING", (0, 0), (-1, -1), 8), ("TOPPADDING", (0, 0), (-1, -1), 6),
-                               ("BOTTOMPADDING", (0, 0), (-1, -1), 6)]))
-        story += [Spacer(1, 8), t]
-
     for section in report["sections"]:
         story.append(Paragraph(section["title"], h2))
         if section.get("rows"):

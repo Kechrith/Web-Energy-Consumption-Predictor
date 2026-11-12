@@ -31,8 +31,6 @@ def render_sidebar() -> None:
             rows.append(_status_row("#60A5FA", f"{proj['site_type']} · {proj['status']}"))
         if ds is None:
             rows.append(_status_row("#94A3B8", "No dataset selected"))
-        elif ds["source"] == "demo":
-            rows.append(_status_row("#F59E0B", "Synthetic demo data"))
         else:
             rows.append(_status_row("#22C55E", f"Uploaded: {ds['file_name']}"))
         backend = ss.get("backend_status")

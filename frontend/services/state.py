@@ -11,7 +11,7 @@ import uuid
 import pandas as pd
 import streamlit as st
 
-from services.data_service import generate_demo_data, prepare_series, to_daily
+from services.data_service import prepare_series, to_daily
 
 DEFAULT_SETTINGS = {
     "workspace_name": "RUPP Energy Lab",
@@ -23,7 +23,6 @@ DEFAULT_SETTINGS = {
     "api_url": "http://localhost:8000",
     "api_timeout": 5,
     "confirm_delete": True,
-    "show_demo_labels": True,
     "keep_raw_upload": True,
     "notify_anomalies": True,
     "notify_training": True,
@@ -35,38 +34,13 @@ def _new_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:8]}"
 
 
-def _demo_dataset(site_type: str, project_id: str) -> dict:
-    df = generate_demo_data(site_type)
-    return {
-        "id": _new_id("ds"),
-        "name": f"Demo · {site_type} meter (synthetic)",
-        "project_id": project_id,
-        "source": "demo",
-        "df": df,
-        "time_col": "timestamp",
-        "target_col": "consumption_kwh",
-        "weather_cols": ["temperature_c", "humidity_pct"],
-        "created": pd.Timestamp.now(),
-        "file_name": "generated in app",
-    }
-
-
 def init_state() -> None:
     ss = st.session_state
     if "settings" not in ss:
         ss.settings = dict(DEFAULT_SETTINGS)
-    if "projects" not in ss:
-        ss.projects, ss.datasets = {}, {}
-        now = pd.Timestamp.now()
-        seeds = [
-            ("University Campus", "University", "Main campus building meters.", now - pd.Timedelta(hours=2)),
-            ("Office Building", "Commercial building", "Weekday/weekend office load patterns.", now - pd.Timedelta(days=1, hours=3)),
-            ("Factory Demo", "Factory", "Shift-based industrial load.", now - pd.Timedelta(days=4)),
-        ]
-        for name, site, desc, last in seeds:
-            pid = create_project(name, site, desc, with_demo=True)
-            ss.projects[pid]["last_activity"] = last
-        ss.active_project_id = next(iter(ss.projects))
+    ss.setdefault("projects", {})
+    ss.setdefault("datasets", {})
+    ss.setdefault("active_project_id", None)
     ss.setdefault("forecasts", {})      # project_id -> last forecast result dict
     ss.setdefault("experiments", {})    # project_id -> list of experiment dicts
     ss.setdefault("anomaly_runs", {})   # project_id -> last anomaly result dict
@@ -75,17 +49,13 @@ def init_state() -> None:
 
 
 # ---------------- Projects ----------------
-def create_project(name: str, site_type: str, description: str = "", with_demo: bool = True) -> str:
+def create_project(name: str, site_type: str, description: str = "") -> str:
     pid = _new_id("prj")
     now = pd.Timestamp.now()
     st.session_state.projects[pid] = {
         "id": pid, "name": name.strip(), "site_type": site_type, "description": description.strip(),
         "status": "Active", "created": now, "last_activity": now, "active_dataset_id": None,
     }
-    if with_demo:
-        ds = _demo_dataset(site_type, pid)
-        st.session_state.datasets[ds["id"]] = ds
-        st.session_state.projects[pid]["active_dataset_id"] = ds["id"]
     return pid
 
 

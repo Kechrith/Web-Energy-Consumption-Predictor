@@ -46,8 +46,6 @@ with st.form("settings_form", border=False):
     with st.container(border=True):
         section_header("Data management")
         confirm = st.toggle("Ask for confirmation before deleting projects or datasets", cfg["confirm_delete"])
-        demo_labels = st.toggle("Show demo-data banners", cfg["show_demo_labels"],
-                                help="Badges on charts and reports always remain, even when banners are hidden.")
         keep_raw = st.toggle("Keep all uploaded columns (not only mapped ones)", cfg["keep_raw_upload"])
 
     with st.container(border=True):
@@ -75,7 +73,7 @@ if saved:
             ss.backend_status = None
         cfg.update(workspace_name=workspace.strip(), unit=unit or "kWh", tariff=tariff, currency=currency,
                    default_horizon=horizon, default_model=model, api_url=api_url.strip(), api_timeout=timeout,
-                   confirm_delete=confirm, show_demo_labels=demo_labels, keep_raw_upload=keep_raw,
+                   confirm_delete=confirm, keep_raw_upload=keep_raw,
                    notify_anomalies=n_anom, notify_training=n_train, notify_email=email.strip())
         st.toast("Settings saved for this session.", icon=":material/check_circle:")
         st.rerun()

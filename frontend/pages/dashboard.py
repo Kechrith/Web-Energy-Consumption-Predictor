@@ -105,8 +105,7 @@ with left, st.container(border=True):
         section_header("Actual vs predicted", f"Backtest of the last {len(fc['backtest'])} days the model did not see")
         charts.show(charts.actual_vs_predicted(fc["backtest"], unit, height=260), key="dash_avp")
         mape = f"MAPE {m['MAPE']:.1f}%" if not np.isnan(m["MAPE"]) else "MAPE n/a"
-        st.caption(f"{model}: MAE {fmt_energy(m['MAE'], unit, 1)} · {mape}. Real error on held-out data"
-                   f"{' (synthetic dataset)' if ds['source'] == 'demo' else ''}.")
+        st.caption(f"{model}: MAE {fmt_energy(m['MAE'], unit, 1)} · {mape}. Real error on held-out data.")
 with right, st.container(border=True):
     if freq == "hourly":
         section_header("Peak-demand periods", "Average consumption by weekday and hour")

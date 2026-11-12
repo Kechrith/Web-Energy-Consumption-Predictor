@@ -3,22 +3,27 @@
 Run with:  streamlit run app.py
 """
 
+from pathlib import Path
+
 import streamlit as st
 
 from components.sidebar import render_sidebar
 from components.styles import inject_styles
 from services.state import init_state
 
+# Resolve assets next to this file so the app also works when started from another folder
+ASSETS = Path(__file__).resolve().parent / "assets"
+
 st.set_page_config(
     page_title="EnergyIntel · Energy Intelligence Platform",
-    page_icon="assets/icon.svg",
+    page_icon=str(ASSETS / "icon.svg"),
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 inject_styles()
 init_state()
-st.logo("assets/logo.svg", icon_image="assets/icon.svg", size="large")
+st.logo(str(ASSETS / "logo.svg"), icon_image=str(ASSETS / "icon.svg"), size="large")
 
 pages = {
     "Analytics": [

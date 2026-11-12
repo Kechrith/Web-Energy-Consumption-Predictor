@@ -136,11 +136,9 @@ with results:
                    "Select <b>Generate forecast</b> to update it.", kind="info")
         fc = res["forecast"]
         step_label = "hour" if res["freq"] == "hourly" else "day"
-        is_demo = res["dataset_source"] == "demo"
         source_tag = badge("Local model", "info") if res["source"] == "local" else badge("Backend model", "real")
-        data_tag = badge("Synthetic data", "demo") if is_demo else badge("Uploaded data", "real")
         st.markdown(f"**{res['model']}** · {res['horizon_days']}-day {res['freq']} forecast for *{res['dataset_name']}* "
-                    f"&nbsp;{source_tag} {data_tag}", unsafe_allow_html=True)
+                    f"&nbsp;{source_tag}", unsafe_allow_html=True)
 
         peak = fc.loc[fc["forecast"].idxmax()]
         m = res.get("metrics") or {}
@@ -198,7 +196,6 @@ with results:
                              format="ddd D MMM YYYY, HH:mm" if res["freq"] == "hourly" else "ddd D MMM YYYY")})
             export = out.copy()
             export.insert(1, "model", res["model"])
-            export["data_source"] = "synthetic_demo" if is_demo else "uploaded"
             st.download_button("Export forecast (CSV)", export.to_csv(index=False).encode("utf-8"),
                                f"forecast_{res['model'].replace(' ', '_').lower()}_{res['horizon_days']}d.csv", "text/csv",
                                type="primary", icon=":material/download:")

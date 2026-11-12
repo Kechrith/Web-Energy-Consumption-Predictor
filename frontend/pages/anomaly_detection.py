@@ -6,7 +6,7 @@ import streamlit as st
 
 from components import charts
 from components.layout import page_context
-from components.metric_cards import badge, banner, empty_state, footer, kpi_card, section_header
+from components.metric_cards import banner, empty_state, footer, kpi_card, section_header
 from services.anomaly_service import (METHODS, SENSITIVITY, anomaly_table, detect_statistical, investigation_hint)
 from services.api_client import get_client
 from services.state import dataset_selector, prepared, settings, touch
@@ -109,8 +109,7 @@ with k4:
 # ---------------- Chart ----------------
 with st.container(border=True):
     section_header("Consumption with highlighted anomalies",
-                   f"{run_state['dataset_name']} · {run_state['config']['method']} · |z| > {run_state['config']['threshold']}",
-                   badge("Synthetic data", "demo") if run_state["dataset_source"] == "demo" else "")
+                   f"{run_state['dataset_name']} · {run_state['config']['method']} · |z| > {run_state['config']['threshold']}")
     show_expected = st.toggle("Show expected consumption", value=True, key="an_expected")
     charts.show(charts.anomaly_chart(result, unit, show_expected=show_expected), key="an_chart")
 
@@ -154,7 +153,6 @@ else:
         (ss.reviewed_anomalies.add if flag else ss.reviewed_anomalies.discard)(str(ts))
 
     export = view.drop(columns=["is_anomaly"]).copy()
-    export["data_source"] = "synthetic_demo" if run_state["dataset_source"] == "demo" else "uploaded"
     export["method"] = run_state["config"]["method"]
     export["reviewed"] = [str(t) in ss.reviewed_anomalies for t in view["timestamp"]]
     st.download_button("Export anomalies (CSV)", export.to_csv(index=False).encode("utf-8"), "energy_anomalies.csv",

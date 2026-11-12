@@ -51,7 +51,7 @@ prompt_toolkit==3.0.53
 protobuf==7.36.2
 psutil==7.2.2
 pure_eval==0.2.4
-pyarrow==25.0.1
+pyarrow==26.0.0
 pydantic==2.14.1
 pydantic_core==2.50.1
 pydeck==0.9.3
@@ -61,7 +61,6 @@ pytest==9.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.4
 python-multipart==0.0.32
-PyYAML==6.0.3
 pyzmq==27.2.0
 referencing==0.37.0
 requests==2.34.2
@@ -72,7 +71,7 @@ seaborn==0.13.2
 six==1.17.0
 stack-data==0.6.3
 starlette==1.8.0
-streamlit==1.65.0
+streamlit==1.66.1
 threadpoolctl==3.7.0
 toml==0.10.2
 tornado==6.5.10

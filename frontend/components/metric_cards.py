@@ -73,12 +73,6 @@ def banner(text: str, kind: str = "info", title: str = "") -> None:
     _html(f'<div class="ei-banner {kind}">{icon(icon_name, color, 18)}<div>{title_html}{text}</div></div>')
 
 
-def demo_banner(what: str = "This page uses a synthetic demonstration dataset.") -> None:
-    if st.session_state.get("settings", {}).get("show_demo_labels", True):
-        banner(f"{escape(what)} Upload your own meter data on the <b>Datasets</b> page to analyse real consumption.",
-               kind="demo", title="Demo data.")
-
-
 def empty_state(title: str, body: str, icon_name: str = "inbox") -> None:
     _html(
         f"""<div class="ei-empty"><div class="ei-empty-icon">{icon(icon_name, "#2563EB", 22)}</div>
@@ -115,5 +109,5 @@ def check_list(checks: list[dict]) -> None:
 def footer() -> None:
     _html(
         '<div class="ei-footer">EnergyIntel · Energy Intelligence Platform · Frontend v1.0 · '
-        'Demonstration data and placeholder results are labelled. Validate models before operational use.</div>'
+        'Validate models before operational use.</div>'
     )

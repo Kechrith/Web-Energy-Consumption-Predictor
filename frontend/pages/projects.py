@@ -47,15 +47,13 @@ with st.expander("Create a new project", icon=":material/add:", expanded=not pro
         name = a.text_input("Project name *", placeholder="e.g. Phnom Penh Campus — Building A", max_chars=60)
         site = b.selectbox("Site type *", SITE_TYPES)
         desc = st.text_area("Description", placeholder="What will this project analyse?", height=80, max_chars=240)
-        with_demo = st.checkbox("Start with a synthetic demo dataset for this site type", value=True,
-                                help="Useful for exploring the app. You can upload real data later on the Datasets page.")
         if st.form_submit_button("Create project", type="primary"):
             if not name.strip():
                 st.error("Enter a project name.")
             elif name_taken(name):
                 st.error("A project with this name already exists.")
             else:
-                pid = create_project(name, site, desc, with_demo=with_demo)
+                pid = create_project(name, site, desc)
                 ss.active_project_id = pid
                 st.toast(f"Project “{name.strip()}” created and set as active.", icon=":material/check_circle:")
                 st.rerun()

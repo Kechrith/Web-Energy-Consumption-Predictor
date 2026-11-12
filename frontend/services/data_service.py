@@ -1,4 +1,4 @@
-"""Data loading, synthetic demo generation, and series preparation.
+"""Data loading and series preparation.
 
 Everything in this module runs locally. Swap `read_uploaded_file` / `prepare_series`
 for backend calls (see services/api_client.py) once datasets are stored server-side.
@@ -20,72 +20,6 @@ SITE_TYPES = ["University", "Commercial building", "Factory", "Hotel", "Househol
 # Repository root (one level above frontend/) and the UCI dataset used to train backend/ models.
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 UCI_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "energydata_complete.csv"
-
-# Profile parameters per site type: base load, daytime load, weekend factor, schedule hours.
-_PROFILES = {
-    "University":          dict(base=140, peak=380, weekend=0.45, start=7,  end=19, cooling=9.0,  seed=11),
-    "Commercial building": dict(base=60,  peak=260, weekend=0.25, start=8,  end=19, cooling=6.5,  seed=23),
-    "Factory":             dict(base=520, peak=880, weekend=0.70, start=6,  end=22, cooling=4.0,  seed=37),
-    "Hotel":               dict(base=110, peak=210, weekend=1.10, start=17, end=23, cooling=7.5,  seed=41),
-    "Household":           dict(base=0.35, peak=1.6, weekend=1.15, start=18, end=22, cooling=0.08, seed=53),
-}
-
-
-@st.cache_data(show_spinner=False)
-def generate_demo_data(site_type: str = "University", days: int = 180) -> pd.DataFrame:
-    """Realistic synthetic hourly meter data (DEMONSTRATION ONLY).
-
-    Combines a weekly schedule, a daily occupancy curve, temperature-driven cooling load,
-    slow seasonal drift, noise, and a handful of injected unusual events.
-    """
-    p = _PROFILES.get(site_type, _PROFILES["University"])
-    rng = np.random.default_rng(p["seed"])
-    end = pd.Timestamp.today().normalize() - pd.Timedelta(hours=1)
-    idx = pd.date_range(end=end, periods=days * 24, freq="h")
-    hour = idx.hour.to_numpy()
-    dow = idx.dayofweek.to_numpy()
-    doy = idx.dayofyear.to_numpy()
-    n = len(idx)
-
-    # Weather: tropical climate (Phnom Penh-like), hot season around April.
-    seasonal_t = 2.2 * np.sin((doy - 30) / 365 * 2 * np.pi)
-    daily_t = 3.8 * np.sin((hour - 9) / 24 * 2 * np.pi)
-    temp = 28.0 + seasonal_t + daily_t + rng.normal(0, 0.8, n)
-    humidity = np.clip(76 - 1.6 * daily_t + rng.normal(0, 4, n), 45, 98)
-
-    # Occupancy curve: smooth ramp inside schedule hours.
-    s, e = p["start"], p["end"]
-    occ = 1 / (1 + np.exp(-(hour - s) * 1.6)) * 1 / (1 + np.exp((hour - e) * 1.6))
-    if site_type == "Household":
-        occ = 0.55 * np.exp(-((hour - 7) ** 2) / 3) + np.exp(-((hour - 20) ** 2) / 5)
-    weekend = np.where(dow >= 5, p["weekend"], 1.0)
-    if site_type == "Factory":
-        weekend = np.where(dow == 6, 0.35, np.where(dow == 5, 0.75, 1.0))
-
-    drift = 1 + 0.06 * np.sin(np.arange(n) / n * 2 * np.pi) + 0.04 * np.arange(n) / n
-    cooling = p["cooling"] * np.clip(temp - 24, 0, None) * (0.4 + 0.6 * occ)
-    load = (p["base"] + (p["peak"] - p["base"]) * occ * weekend) * drift + cooling
-    load *= 1 + rng.normal(0, 0.045, n)
-
-    # Injected unusual events (documented so the demo stays honest).
-    def bump(day_offset: int, hours: range, factor: float) -> None:
-        start = n - day_offset * 24
-        for h in hours:
-            if 0 <= start + h < n:
-                load[start + h] *= factor
-
-    bump(9, range(0, 7), 2.4)        # equipment left running overnight
-    bump(23, range(10, 16), 1.65)    # unusual daytime spike
-    bump(41, range(8, 20), 0.18)     # supply outage / meter fault
-    bump(67, range(0, 24), 1.45)     # event day
-    bump(118, range(13, 18), 1.8)    # chiller fault
-
-    return pd.DataFrame({
-        "timestamp": idx,
-        "consumption_kwh": np.round(np.maximum(load, 0), 3),
-        "temperature_c": np.round(temp, 1),
-        "humidity_pct": np.round(humidity, 1),
-    })
 
 
 @st.cache_data(show_spinner=False)
