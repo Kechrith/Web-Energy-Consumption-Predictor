@@ -8,9 +8,10 @@ factories, hotels and households, and is ready to connect to a FastAPI ML backen
 
 | Page | What it does |
 |---|---|
-| **Energy Predictor** | Appliance energy (Wh) from the trained model in `../artifacts/`, served by `../backend` (`GET /model/info`, `POST /predict`); flags inputs outside the training range |
-| **Dashboard** | KPIs (total, daily average, peak, estimated cost, change vs previous period), historical chart, 7-day forecast, actual vs predicted backtest, peak-demand heatmap, recent anomaly alerts, insights, date-range filter, workspace selector |
+| **Energy Predictor** | Appliance energy (Wh) from the trained model in `../artifacts/`, served by `../backend` (`GET /model/info`, `POST /predict`); flags inputs outside the training range; save predicted readings to project |
+| **Dashboard** | KPIs (total, daily average, peak, estimated cost, change vs previous period), historical chart with daily cost tooltips, 7-day forecast, actual vs predicted backtest, peak-demand heatmap, recent anomaly alerts, insights, date-range filter, workspace selector |
 | **Projects** | Create / rename / archive / delete projects (University, Commercial building, Factory, Hotel, Household); status and last activity |
+| **My Readings** | Manual reading entry form, Quick Add (pre-filled with current timestamp and last values), real-time validation (missing, negative, duplicate, range), editable records table (`st.data_editor`), per-reading and daily electricity cost breakdown, and actual vs predicted comparison |
 | **Datasets** | Drag-and-drop CSV/Excel upload, column mapping (timestamp, target, weather), validation (timestamps, gaps, duplicates, types, negatives), numeric and categorical summaries, missing-value chart, preview download |
 | **Forecasting** | Dataset/column/model selection, 7–90 day horizon, daily or hourly frequency, empirical prediction intervals, backtest, peak date, CSV export |
 | **Anomaly Detection** | Method and sensitivity selection, highlighted chart, observed vs expected, deviation %, severity, review tracking, CSV export |

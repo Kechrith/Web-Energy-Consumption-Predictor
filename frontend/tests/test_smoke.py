@@ -11,7 +11,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ["dashboard", "predictor", "projects", "datasets", "forecasting", "anomaly_detection", "model_lab", "reports", "settings"]
+PAGES = ["dashboard", "predictor", "projects", "readings", "datasets", "forecasting", "anomaly_detection", "model_lab", "reports", "settings"]
 
 
 def _meter_data(days: int = 120) -> pd.DataFrame:
@@ -154,3 +154,27 @@ def test_dayfirst_dates_and_messy_csv():
     assert rep.ok and rep.frequency == "daily"
     series, freq = prepare_series(df, **sug)
     assert freq == "daily" and len(series) == 60 and series.index[0] == pd.Timestamp("2025-01-01")
+
+
+def test_manual_reading_crud_operations():
+    from services.state import append_reading, create_empty_dataset, init_state, update_dataset_df
+    import streamlit as st
+
+    init_state()
+    st.session_state["projects"]["p1"] = {"id": "p1", "name": "P1", "active_dataset_id": None}
+    did = create_empty_dataset("p1", "Log Test")
+    assert did in st.session_state["datasets"]
+    ds = st.session_state["datasets"][did]
+    initial_len = len(ds["df"])
+
+    new_time = pd.Timestamp.now()
+    append_reading(did, {"timestamp": new_time, "consumption_kwh": 12.5, "notes": "Test add"})
+    assert len(ds["df"]) == initial_len + 1
+    assert float(ds["df"].iloc[-1]["consumption_kwh"]) == 12.5
+
+    # Test update
+    mod_df = ds["df"].copy()
+    mod_df.loc[mod_df.index[-1], "consumption_kwh"] = 99.0
+    update_dataset_df(did, mod_df)
+    assert float(ds["df"].iloc[-1]["consumption_kwh"]) == 99.0
+

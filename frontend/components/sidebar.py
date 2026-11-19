@@ -7,8 +7,9 @@ import streamlit as st
 from services.state import active_dataset, active_project, select_id
 
 
-def _status_row(color: str, text: str) -> str:
-    return f'<div class="ei-side-status"><span class="ei-dot" style="background:{color};"></span>{escape(text)}</div>'
+def _status_row(color: str, text: str, pulse: bool = False) -> str:
+    pulse_cls = " pulse" if pulse else ""
+    return f'<div class="ei-side-status"><span class="ei-dot{pulse_cls}" style="background:{color}; color:{color};"></span>{escape(text)}</div>'
 
 
 def render_sidebar() -> None:
@@ -35,7 +36,7 @@ def render_sidebar() -> None:
             rows.append(_status_row("#22C55E", f"Uploaded: {ds['file_name']}"))
         backend = ss.get("backend_status")
         if backend is True:
-            rows.append(_status_row("#22C55E", "ML backend connected"))
+            rows.append(_status_row("#22C55E", "ML backend connected", pulse=True))
         elif backend is False:
             rows.append(_status_row("#EF4444", "ML backend unreachable"))
         else:

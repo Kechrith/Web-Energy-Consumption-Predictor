@@ -41,6 +41,13 @@ m3.metric("Datasets", len(ss.datasets))
 m4.metric("Experiments", sum(len(v) for v in ss.experiments.values()))
 
 # ---------- Create ----------
+if not projects:
+    if st.button("🚀 Load Sample Project & Data (1-Click)", type="primary", icon=":material/rocket_launch:", width="stretch"):
+        from services.state import load_demo_workspace
+        load_demo_workspace()
+        st.toast("Sample project loaded!", icon=":material/check_circle:")
+        st.rerun()
+
 with st.expander("Create a new project", icon=":material/add:", expanded=not projects):
     with st.form("new_project", clear_on_submit=True, border=False):
         a, b = st.columns(2)

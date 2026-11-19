@@ -34,6 +34,7 @@ pages = {
     ],
     "Workspace": [
         st.Page("pages/projects.py", title="Projects", icon=":material/folder:"),
+        st.Page("pages/readings.py", title="My Readings", icon=":material/table_chart:"),
         st.Page("pages/datasets.py", title="Datasets", icon=":material/database:"),
         st.Page("pages/model_lab.py", title="Model Lab", icon=":material/science:"),
         st.Page("pages/reports.py", title="Reports", icon=":material/description:"),

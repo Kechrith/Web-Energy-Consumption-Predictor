@@ -10,7 +10,7 @@ from components.metric_cards import banner, empty_state, footer, kpi_card, secti
 from services.anomaly_service import (METHODS, SENSITIVITY, anomaly_table, detect_statistical, investigation_hint)
 from services.api_client import get_client
 from services.state import dataset_selector, prepared, settings, touch
-from utils.formatting import fmt_energy, unit_factor
+from utils.formatting import fmt_energy, fmt_money, unit_factor
 
 ss = st.session_state
 proj, ds = page_context("Anomaly Detection",
@@ -102,9 +102,10 @@ with k3:
         kpi_card("Largest deviation", "—", "No anomalies", icon_name="activity", tone="navy")
 with k4:
     extra = table.loc[table["deviation"] > 0, "deviation"].sum()
-    kpi_card("Excess energy in flags", fmt_energy(extra, unit), "above expected, upward anomalies only",
-             icon_name="trending-up", tone="green",
-             help_text="Sum of (observed − expected) for periods flagged above expected.")
+    extra_cost = extra * float(cfg["tariff"])
+    kpi_card("Potential Wasted Energy", fmt_energy(extra, unit), f"~{fmt_money(extra_cost, cfg['currency'])} estimated cost",
+             icon_name="trending-up", tone="amber" if extra > 0 else "green",
+             help_text="Sum of unexpected energy consumption above baseline.")
 
 # ---------------- Chart ----------------
 with st.container(border=True):

@@ -45,14 +45,21 @@ def _band(fig: go.Figure, x, lower, upper, color: str, name: str) -> None:
                              fillcolor=color, name=name, hoverinfo="skip"))
 
 
-def consumption_chart(daily: pd.DataFrame, unit: str, rolling: bool = True, height: int = 330) -> go.Figure:
+def consumption_chart(daily: pd.DataFrame, unit: str, rolling: bool = True, height: int = 330,
+                      tariff: float = 0.0, currency: str = "USD") -> go.Figure:
     f = unit_factor(unit)
     fig = go.Figure()
     y = daily["y"] * f
+    costs = (daily["y"] * tariff).round(2)
+    if tariff > 0:
+        ht = "%{y:,.1f} " + unit + "<br>Daily cost: " + currency + " %{customdata:,.2f}<extra></extra>"
+    else:
+        ht = "%{y:,.1f} " + unit + "<extra></extra>"
     fig.add_trace(go.Scatter(x=daily.index, y=y, name="Daily consumption", mode="lines",
                              line=dict(color=COLORS["blue"], width=2),
                              fill="tozeroy", fillcolor="rgba(37,99,235,0.06)",
-                             hovertemplate="%{y:,.1f} " + unit + "<extra></extra>"))
+                             customdata=costs,
+                             hovertemplate=ht))
     if rolling and len(daily) >= 7:
         fig.add_trace(go.Scatter(x=daily.index, y=y.rolling(7, min_periods=1).mean(), name="7-day average",
                                  mode="lines", line=dict(color=COLORS["navy"], width=1.5, dash="dot"),

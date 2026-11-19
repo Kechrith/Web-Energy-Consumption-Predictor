@@ -51,11 +51,12 @@ def kpi_card(label: str, value: str, foot: str = "", delta: str = "", delta_tone
     fg, bg = _TONES.get(tone, _TONES["blue"])
     delta_html = f'<span class="ei-delta {delta_tone}">{escape(delta)}</span>' if delta else ""
     title_attr = f' title="{escape(help_text)}"' if help_text else ""
+    help_indicator = f'<span class="ei-help-dot" title="{escape(help_text)}">ⓘ</span>' if help_text else ""
     _html(
         f"""
-        <div class="ei-card ei-kpi"{title_attr}>
+        <div class="ei-card ei-kpi ei-tone-{tone}"{title_attr}>
           <div class="ei-kpi-top">
-            <span class="ei-kpi-label">{escape(label)}</span>
+            <span class="ei-kpi-label">{escape(label)} {help_indicator}</span>
             <span class="ei-kpi-icon" style="background:{bg};">{icon(icon_name, fg, 16)}</span>
           </div>
           <div class="ei-kpi-value">{escape(value)}</div>

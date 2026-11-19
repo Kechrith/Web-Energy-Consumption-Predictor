@@ -17,6 +17,15 @@ proj, ds = page_context("Dashboard", "A snapshot of consumption, cost, upcoming 
 cfg = settings()
 unit = cfg["unit"]
 
+# ---------- Quick Actions ----------
+qa1, qa2, qa3, qa4 = st.columns(4)
+qa1.page_link("pages/readings.py", label="Log / View Readings", icon=":material/table_chart:")
+qa2.page_link("pages/predictor.py", label="Predict Appliance Energy", icon=":material/bolt:")
+qa3.page_link("pages/forecasting.py", label="Forecast Future Demand", icon=":material/trending_up:")
+qa4.page_link("pages/reports.py", label="Generate PDF Report", icon=":material/description:")
+
+st.write("")
+
 # ---------- Filters ----------
 f1, f2, f3 = st.columns([1.3, 1.4, 1], vertical_alignment="bottom")
 with f1:
@@ -84,8 +93,8 @@ except ValueError as exc:
 
 left, right = st.columns([1.65, 1])
 with left, st.container(border=True):
-    section_header("Historical consumption", f"Daily totals, {fmt_date(start)} – {fmt_date(end)}")
-    charts.show(charts.consumption_chart(period, unit), key="dash_hist")
+    section_header("Historical consumption", f"Daily totals and cost, {fmt_date(start)} – {fmt_date(end)}")
+    charts.show(charts.consumption_chart(period, unit, tariff=cfg["tariff"], currency=cfg["currency"]), key="dash_hist")
 with right, st.container(border=True):
     section_header("Next 7 days", f"{model} · computed locally", badge("Baseline", "info"))
     if fc:

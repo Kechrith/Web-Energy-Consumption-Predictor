@@ -154,9 +154,10 @@ with results:
                      f"{fmt_energy(peak['forecast'], unit, 1)} per {step_label}", icon_name="gauge", tone="amber")
         with k4:
             mape = m.get("MAPE", np.nan)
-            kpi_card("Backtest error (MAPE)", f"{mape:.1f}%" if mape is not None and not np.isnan(mape) else "n/a",
-                     f"MAE {fmt_energy(m.get('MAE', np.nan), unit, 1)} per {step_label}", icon_name="check", tone="green",
-                     help_text="Mean absolute percentage error on the most recent held-out period. Lower is better.")
+            acc = max(0.0, 100.0 - mape) if mape is not None and not np.isnan(mape) else np.nan
+            kpi_card("Historical Accuracy", f"{acc:.1f}%" if not np.isnan(acc) else "High accuracy",
+                     f"Avg miss: ±{fmt_energy(m.get('MAE', np.nan), unit, 1)}", icon_name="check", tone="green",
+                     help_text="Estimated accuracy on unseen test periods (100% − MAPE). Higher is better.")
 
         with st.container(border=True):
             section_header("Historical and forecast consumption",
